@@ -26,8 +26,12 @@ clock = pygame.time.Clock()
 carImg = pygame.image.load('BestlGameCarLmao.png')
 icon = pygame.image.load('garbagebin.png')
 
-pygame.display.set_icon(icon)
+crash_sound = pygame.mixer.Sound('Lol U Died.wav')
+pause_sound = pygame.mixer.Sound('GetUrAssBackThere.wav')
+intro_sound = pygame.mixer.Sound('DialUp Internet.wav')
+# play_music = pygame.mixer.music.load('music.wav')
 
+pygame.display.set_icon(icon)
 
 def things_dodged(count):
     font = pygame.font.SysFont(None, 24)
@@ -61,6 +65,9 @@ def text_display(text, font):
 
 
 def crash():
+    # pygame.mixer.music.stop()
+    pygame.mixer.Sound.play(crash_sound)
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -104,6 +111,7 @@ def unpause():
 
 
 def paused():
+    pygame.mixer.Sound.play(pause_sound)
     while pause:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -123,6 +131,7 @@ def paused():
 
 
 def game_intro():
+    pygame.mixer.Sound.play(intro_sound)
     intro = True
     while intro:
         for event in pygame.event.get():
@@ -143,6 +152,7 @@ def game_intro():
 
 def game_loop():
     global pause
+    # pygame.mixer.music.play(-1)
     x = display_width * 0.45
     y = display_heigth * 0.8
     x_change = 0
