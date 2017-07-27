@@ -159,7 +159,7 @@ def game_loop():
 
     thing_x = random.randrange(0, display_width)
     thing_y = -600
-    thing_speed = 4
+    thing_speed = 5
     thing_w = 100
     thing_h = 100
 
@@ -199,8 +199,8 @@ def game_loop():
             thing_y = 0 - thing_h
             thing_x = random.randrange(0, display_width)
             dodged += 1
-            # thing_speed += 1
-            thing_w += dodged * 1.2
+            thing_speed += 1
+            # thing_w += dodged * 1.2
 
         if y < thing_y + thing_h and y + car_height > thing_y:
             if thing_x < x < thing_x + thing_w or thing_x < x+car_width < thing_x + thing_w:
