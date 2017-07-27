@@ -19,17 +19,20 @@ car_width = 56
 car_height = 70
 
 pause = False
+sound_playing = False
 
 gameDisplay = pygame.display.set_mode((display_width,display_heigth))
 pygame.display.set_caption('NEW GTA TOTALLY NOT OVERHYPED KAPPA GAME nomansbuy 2.0')
 clock = pygame.time.Clock()
 carImg = pygame.image.load('BestlGameCarLmao.png')
 icon = pygame.image.load('garbagebin.png')
+img_bg2 = pygame.image.load('sanicpepe.png')
+
 
 crash_sound = pygame.mixer.Sound('Lol U Died.wav')
 pause_sound = pygame.mixer.Sound('GetUrAssBackThere.wav')
 intro_sound = pygame.mixer.Sound('DialUp Internet.wav')
-# play_music = pygame.mixer.music.load('music.wav')
+play_music = pygame.mixer.music.load('despacito.wav')
 
 pygame.display.set_icon(icon)
 
@@ -64,8 +67,34 @@ def text_display(text, font):
     gameDisplay.blit(TextSurf, TextRect)
 
 
+def difficulty_settings(score):
+    global play_music
+
+    if score < 10:
+        gameDisplay.fill(white)
+    elif score < 20:
+        gameDisplay.fill(green)
+    else:
+        gameDisplay.fill(green)
+        gameDisplay.blit(img_bg2, (0,0))
+
+    # if score == 0:
+        # play_music = pygame.mixer.music.load('despacito.wav')
+        # print('score==0')
+    if score == 10:
+        pygame.mixer.music.stop()
+        play_music = pygame.mixer.music.load('despacito2.wav')
+        pygame.mixer.music.play(-1)
+    elif score == 20:
+        pygame.mixer.music.stop()
+        play_music = pygame.mixer.music.load('despacito3.wav')
+        pygame.mixer.music.play(-1)
+
+
+
+
 def crash():
-    # pygame.mixer.music.stop()
+    pygame.mixer.music.stop()
     pygame.mixer.Sound.play(crash_sound)
 
     while True:
@@ -111,6 +140,7 @@ def unpause():
 
 
 def paused():
+    pygame.mixer.music.stop()
     pygame.mixer.Sound.play(pause_sound)
     while pause:
         for event in pygame.event.get():
@@ -128,6 +158,8 @@ def paused():
 
         pygame.display.update()
         clock.tick(15)
+    pygame.mixer.music.play(-1)
+
 
 
 def game_intro():
@@ -137,8 +169,9 @@ def game_intro():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quitgame()
-            if event.type == pygame.K_SPACE:
+            if event.type == pygame.K_KP_ENTER or event.type == pygame.K_SPACE:
                 intro = False
+                game_loop()
 
         gameDisplay.fill(white)
         title_display("ayy lmaooo sim2k17", pygame.font.Font('freesansbold.ttf', 80), display_width/2, display_heigth/2)
@@ -150,9 +183,10 @@ def game_intro():
         clock.tick(15)
 
 
+
 def game_loop():
     global pause
-    # pygame.mixer.music.play(-1)
+    pygame.mixer.music.play(-1)
     x = display_width * 0.45
     y = display_heigth * 0.8
     x_change = 0
@@ -165,29 +199,45 @@ def game_loop():
 
     dodged = 0
 
+    moves = list()
     gameExit = False
     while not gameExit:
         for event in pygame.event.get():
+            print (event)
+            print(moves)
+
             if event.type == pygame.QUIT:
                 quitgame()
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    x_change = -5
+                    moves.insert(0, "left")
                 if event.key == pygame.K_RIGHT:
-                    x_change = 5
+                    moves.insert(0, "right")
                 if event.key == pygame.K_p:
                     pause = True
                     paused()
 
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                    x_change = 0
+                if event.key == pygame.K_LEFT:
+                    moves.pop(moves.index("left"))
+                if event.key == pygame.K_RIGHT:
+                    moves.pop(moves.index("right"))
+
+            if len(moves) > 0:
+                if moves[0] == "left":
+                    x_change = -5
+                elif moves[0] == "right":
+                    x_change = 5
+            else:
+                x_change = 0
 
         x += x_change
         thing_y += thing_speed
 
-        gameDisplay.fill(white)
+        # set background
+        difficulty_settings(dodged)
+
         things(thing_x, thing_y, thing_w, thing_h, black)
         car(x,y)
         things_dodged(dodged)
@@ -214,3 +264,4 @@ if __name__ == '__main__':
     game_intro()
     game_loop()
     quitgame()
+
