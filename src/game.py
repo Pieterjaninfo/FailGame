@@ -1,6 +1,7 @@
 import pygame
 import time
 import random
+import pickle
 pygame.init()
 
 # Initialize variables
@@ -14,20 +15,29 @@ green = (0,200,0)
 blue = (0,0,200)
 bright_red = (255,0,0)
 bright_green = (0,255,0)
+bright_blue = (0,0,255)
 
 car_width = 56
-car_height = 70
+car_height = 80
+car_speed = 5
+shoot_cd = 0
 
 pause = False
 sound_playing = False
+difficulty_adjusted = False
 
 gameDisplay = pygame.display.set_mode((display_width,display_heigth))
 pygame.display.set_caption('NEW GTA TOTALLY NOT OVERHYPED KAPPA GAME nomansbuy 2.0')
 clock = pygame.time.Clock()
-carImg = pygame.image.load('BestlGameCarLmao.png')
+carImg1 = pygame.image.load('car.png')
+carImg2 = pygame.image.load('BestGameCarLmao.png')
+carImg3 = pygame.image.load('dildowcar.png')
+carImg4 = pygame.image.load('lambo.png')
 icon = pygame.image.load('garbagebin.png')
 img_bg2 = pygame.image.load('sanicpepe.png')
+rocket = pygame.image.load('rocket.png')
 
+selected_car = carImg1
 
 crash_sound = pygame.mixer.Sound('Lol U Died.wav')
 pause_sound = pygame.mixer.Sound('GetUrAssBackThere.wav')
@@ -47,7 +57,7 @@ def things(x, y, w, h, color):
 
 
 def car(x,y):
-    gameDisplay.blit(carImg, (x,y))
+    gameDisplay.blit(selected_car, (x,y))
 
 
 def text_objects(text, font):
@@ -69,33 +79,42 @@ def text_display(text, font):
 
 def difficulty_settings(score):
     global play_music
+    global car_speed
+    global difficulty_adjusted
 
     if score < 10:
         gameDisplay.fill(white)
     elif score < 20:
         gameDisplay.fill(green)
     else:
-        gameDisplay.fill(green)
+        gameDisplay.fill(blue)
         gameDisplay.blit(img_bg2, (0,0))
 
     # if score == 0:
         # play_music = pygame.mixer.music.load('despacito.wav')
         # print('score==0')
-    if score == 10:
-        pygame.mixer.music.stop()
-        play_music = pygame.mixer.music.load('despacito2.wav')
-        pygame.mixer.music.play(-1)
-    elif score == 20:
-        pygame.mixer.music.stop()
-        play_music = pygame.mixer.music.load('despacito3.wav')
-        pygame.mixer.music.play(-1)
-
-
+    if not difficulty_adjusted:
+        if score == 10:
+            car_speed += 3
+            pygame.mixer.music.stop()
+            play_music = pygame.mixer.music.load('despacito2.wav')
+            pygame.mixer.music.play(-1)
+            difficulty_adjusted = True
+        elif score == 20:
+            car_speed += 3
+            pygame.mixer.music.stop()
+            play_music = pygame.mixer.music.load('despacito3.wav')
+            pygame.mixer.music.play(-1)
+            difficulty_adjusted = True
+    if score == 19:
+        difficulty_adjusted = False
 
 
 def crash():
+    global play_music
     pygame.mixer.music.stop()
     pygame.mixer.Sound.play(crash_sound)
+    play_music = pygame.mixer.music.load('despacito.wav')
 
     while True:
         for event in pygame.event.get():
@@ -134,6 +153,27 @@ def button(msg, x, y, w, h, c, c_hover, action=None):
     title_display(msg, pygame.font.Font('freesansbold.ttf', 20), x+w/2, y+h/2)
 
 
+def car_button(car_img, x, y, cw, ch, cs):
+    global selected_car, car_width, car_height, car_speed
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+    w, h = 60, 80
+
+    if x < mouse[0] < x+w and y < mouse[1] < y+h:
+        if click[0] == 1:
+            selected_car = car_img
+            car_width = cw
+            car_height = ch
+            car_speed = cs
+
+    if selected_car == car_img:
+        pygame.draw.rect(gameDisplay, bright_green, (x,y,w,h))
+    else:
+        pygame.draw.rect(gameDisplay, blue, (x,y,w,h))
+
+    gameDisplay.blit(pygame.transform.scale(car_img, (cw, 80)), (x+w/2-cw/2,y))
+
+
 def unpause():
     global pause
     pause = False
@@ -161,7 +201,6 @@ def paused():
     pygame.mixer.music.play(-1)
 
 
-
 def game_intro():
     pygame.mixer.Sound.play(intro_sound)
     intro = True
@@ -174,7 +213,13 @@ def game_intro():
                 game_loop()
 
         gameDisplay.fill(white)
-        title_display("ayy lmaooo sim2k17", pygame.font.Font('freesansbold.ttf', 80), display_width/2, display_heigth/2)
+        title_display("ayy lmaooo sim2k17", pygame.font.Font('freesansbold.ttf', 80), display_width/2, display_heigth/3)
+
+        car_button(carImg1, display_width/4, 300, 56, 80, 5)
+        car_button(carImg2, display_width/4+100, 300, 56, 80, 8)
+        car_button(carImg3, display_width/4+200, 300, 56, 80, 5)
+        car_button(carImg4, display_width/4+300, 300, 10, 150, 1)
+
 
         button("GO~!", 150, 450, 100, 50, green, bright_green, game_loop)
         button("Fkoff", 550, 450, 100, 50, red, bright_red, quitgame)
@@ -183,12 +228,12 @@ def game_intro():
         clock.tick(15)
 
 
-
 def game_loop():
     global pause
     pygame.mixer.music.play(-1)
-    x = display_width * 0.45
-    y = display_heigth * 0.8
+    x = display_width * 0.5
+    # y = display_heigth * 0.8
+    y = display_heigth - car_height - 20
     x_change = 0
 
     thing_x = random.randrange(0, display_width)
@@ -203,13 +248,15 @@ def game_loop():
     gameExit = False
     while not gameExit:
         for event in pygame.event.get():
-            print (event)
-            print(moves)
 
             if event.type == pygame.QUIT:
                 quitgame()
 
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    gameExit = True
+                    game_intro()
+
                 if event.key == pygame.K_LEFT:
                     moves.insert(0, "left")
                 if event.key == pygame.K_RIGHT:
@@ -226,9 +273,9 @@ def game_loop():
 
             if len(moves) > 0:
                 if moves[0] == "left":
-                    x_change = -5
+                    x_change = -car_speed
                 elif moves[0] == "right":
-                    x_change = 5
+                    x_change = car_speed
             else:
                 x_change = 0
 
@@ -242,17 +289,17 @@ def game_loop():
         car(x,y)
         things_dodged(dodged)
 
-        if x > display_width - car_width or x < 0:
+        if x > display_width - car_width or x < 0:  #car hitting border
             crash()
 
-        if thing_y > display_heigth:
+        if thing_y > display_heigth:    #object out of screen
             thing_y = 0 - thing_h
             thing_x = random.randrange(0, display_width)
             dodged += 1
             thing_speed += 1
             # thing_w += dodged * 1.2
 
-        if y < thing_y + thing_h and y + car_height > thing_y:
+        if y < thing_y + thing_h and y + car_height > thing_y: #collision
             if thing_x < x < thing_x + thing_w or thing_x < x+car_width < thing_x + thing_w:
                 crash()
 
@@ -264,4 +311,3 @@ if __name__ == '__main__':
     game_intro()
     game_loop()
     quitgame()
-
