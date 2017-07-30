@@ -20,7 +20,6 @@ bright_blue = (0,0,255)
 car_width = 56
 car_height = 80
 car_speed = 5
-shoot_cd = 0
 
 pause = False
 sound_playing = False
@@ -33,7 +32,7 @@ carImg1 = pygame.image.load('car.png')
 carImg2 = pygame.image.load('BestGameCarLmao.png')
 carImg3 = pygame.image.load('dildowcar.png')
 carImg4 = pygame.image.load('lambo.png')
-icon = pygame.image.load('garbagebin.png')
+icon = pygame.image.load('bin.png')
 img_bg2 = pygame.image.load('sanicpepe.png')
 rocket = pygame.image.load('rocket.png')
 
@@ -216,7 +215,7 @@ def game_intro():
         title_display("ayy lmaooo sim2k17", pygame.font.Font('freesansbold.ttf', 80), display_width/2, display_heigth/3)
 
         car_button(carImg1, display_width/4, 300, 56, 80, 5)
-        car_button(carImg2, display_width/4+100, 300, 56, 80, 8)
+        car_button(carImg2, display_width/4+100, 300, 56, 80, 10)
         car_button(carImg3, display_width/4+200, 300, 56, 80, 5)
         car_button(carImg4, display_width/4+300, 300, 10, 150, 1)
 
@@ -229,7 +228,7 @@ def game_intro():
 
 
 def game_loop():
-    global pause
+    global pause, car_speed
     pygame.mixer.music.play(-1)
     x = display_width * 0.5
     # y = display_heigth * 0.8
@@ -242,11 +241,24 @@ def game_loop():
     thing_w = 100
     thing_h = 100
 
+    shoot_cd = 60
+    rocket_x = -1
+    rocket_y = -1
+
+    if selected_car == carImg1 or selected_car == carImg3:
+        car_speed = 5
+    elif selected_car == carImg2:
+        car_speed = 10
+    else:
+        car_speed = 1
+
     dodged = 0
 
     moves = list()
     gameExit = False
     while not gameExit:
+
+        #input handling
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
@@ -264,6 +276,11 @@ def game_loop():
                 if event.key == pygame.K_p:
                     pause = True
                     paused()
+
+                if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
+                    if shoot_cd == 0:
+                        # gameDisplay.blit(rocket, )
+                        pass#draw bullet
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
@@ -297,17 +314,17 @@ def game_loop():
             thing_x = random.randrange(0, display_width)
             dodged += 1
             thing_speed += 1
-            # thing_w += dodged * 1.2
 
         if y < thing_y + thing_h and y + car_height > thing_y: #collision
             if thing_x < x < thing_x + thing_w or thing_x < x+car_width < thing_x + thing_w:
                 crash()
 
+        if shoot_cd > 0:
+            shoot_cd -= 1
         pygame.display.update()
         clock.tick(60)
 
 
 if __name__ == '__main__':
     game_intro()
-    game_loop()
     quitgame()
