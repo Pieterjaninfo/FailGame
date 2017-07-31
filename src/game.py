@@ -1,10 +1,9 @@
 import pygame
-import time
 import random
-import pickle
 pygame.init()
 
 # Initialize variables
+version = 1.0
 display_width = 800
 display_heigth = 600
 
@@ -16,10 +15,13 @@ blue = (0,0,200)
 bright_red = (255,0,0)
 bright_green = (0,255,0)
 bright_blue = (0,0,255)
+purple = (148,0,211)
+yellow = (255,255,0)
 
 car_width = 56
 car_height = 80
 car_speed = 5
+base_shoot_cd = 30
 
 pause = False
 sound_playing = False
@@ -28,7 +30,7 @@ difficulty_adjusted = False
 gameDisplay = pygame.display.set_mode((display_width,display_heigth))
 pygame.display.set_caption('NEW GTA TOTALLY NOT OVERHYPED KAPPA GAME nomansbuy 2.0')
 clock = pygame.time.Clock()
-carImg1 = pygame.image.load('car.png')
+carImg1 = pygame.image.load('../resources/car.png')
 carImg2 = pygame.image.load('BestGameCarLmao.png')
 carImg3 = pygame.image.load('dildowcar.png')
 carImg4 = pygame.image.load('lambo.png')
@@ -41,14 +43,18 @@ selected_car = carImg1
 crash_sound = pygame.mixer.Sound('Lol U Died.wav')
 pause_sound = pygame.mixer.Sound('GetUrAssBackThere.wav')
 intro_sound = pygame.mixer.Sound('DialUp Internet.wav')
+# intro2_sound = pygame.mixer.Sound('Oh Hello There.wav')
+ding_sound = pygame.mixer.Sound('Ding.wav')
+explosion_sound = pygame.mixer.Sound('Explosion.wav')
+splat_sound = pygame.mixer.Sound('Splat.wav')
 play_music = pygame.mixer.music.load('despacito.wav')
 
 pygame.display.set_icon(icon)
 
-def things_dodged(count):
+def draw_score(pretext, count, location):
     font = pygame.font.SysFont(None, 24)
-    text = font.render("~Juked: " + str(count) + " bois", True, black)
-    gameDisplay.blit(text, (0,0))
+    text = font.render(pretext + str(count) + " nuts", True, black)
+    gameDisplay.blit(text, location)
 
 
 def things(x, y, w, h, color):
@@ -70,9 +76,9 @@ def title_display(text, font, x, y):
     gameDisplay.blit(TextSurf, TextRect)
 
 
-def text_display(text, font):
+def text_display(text, font, location):
     TextSurf, TextRect = text_objects(text, font)
-    TextRect = (display_width/2, display_heigth/2)
+    TextRect = location
     gameDisplay.blit(TextSurf, TextRect)
 
 
@@ -85,13 +91,12 @@ def difficulty_settings(score):
         gameDisplay.fill(white)
     elif score < 20:
         gameDisplay.fill(green)
-    else:
+    elif score < 30:
         gameDisplay.fill(blue)
+    else:
+        gameDisplay.fill(yellow)
         gameDisplay.blit(img_bg2, (0,0))
 
-    # if score == 0:
-        # play_music = pygame.mixer.music.load('despacito.wav')
-        # print('score==0')
     if not difficulty_adjusted:
         if score == 10:
             car_speed += 3
@@ -105,7 +110,14 @@ def difficulty_settings(score):
             play_music = pygame.mixer.music.load('despacito3.wav')
             pygame.mixer.music.play(-1)
             difficulty_adjusted = True
-    if score == 19:
+        elif score == 30:
+            car_speed += 3
+            pygame.mixer.music.stop()
+            play_music = pygame.mixer.music.load('BITCHES AINT SHIT.wav')
+            pygame.mixer.music.play(-1)
+            difficulty_adjusted = True
+
+    if score == 19 or score == 29:
         difficulty_adjusted = False
 
 
@@ -201,6 +213,7 @@ def paused():
 
 
 def game_intro():
+    pygame.mixer.music.stop()
     pygame.mixer.Sound.play(intro_sound)
     intro = True
     while intro:
@@ -212,6 +225,9 @@ def game_intro():
                 game_loop()
 
         gameDisplay.fill(white)
+
+        text_display('Version: ' + str(version), pygame.font.Font('freesansbold.ttf', 15), (0,0))
+
         title_display("ayy lmaooo sim2k17", pygame.font.Font('freesansbold.ttf', 80), display_width/2, display_heigth/3)
 
         car_button(carImg1, display_width/4, 300, 56, 80, 5)
@@ -241,7 +257,7 @@ def game_loop():
     thing_w = 100
     thing_h = 100
 
-    shoot_cd = 60
+    shoot_cd = 0
     rocket_x = -1
     rocket_y = -1
 
@@ -253,7 +269,7 @@ def game_loop():
         car_speed = 1
 
     dodged = 0
-
+    destroyed = 0
     moves = list()
     gameExit = False
     while not gameExit:
@@ -270,17 +286,18 @@ def game_loop():
                     game_intro()
 
                 if event.key == pygame.K_LEFT:
-                    moves.insert(0, "left")
+                    moves.insert(0, 'left')
                 if event.key == pygame.K_RIGHT:
-                    moves.insert(0, "right")
+                    moves.insert(0, 'right')
                 if event.key == pygame.K_p:
                     pause = True
                     paused()
 
                 if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
-                    if shoot_cd == 0:
-                        # gameDisplay.blit(rocket, )
-                        pass#draw bullet
+                    if selected_car == carImg3 and shoot_cd == 0:
+                        rocket_x = x + car_width/2
+                        rocket_y = y
+                        shoot_cd = base_shoot_cd
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
@@ -298,18 +315,31 @@ def game_loop():
 
         x += x_change
         thing_y += thing_speed
+        rocket_y -= 20
 
         # set background
         difficulty_settings(dodged)
 
         things(thing_x, thing_y, thing_w, thing_h, black)
         car(x,y)
-        things_dodged(dodged)
+        gameDisplay.blit(rocket, (rocket_x, rocket_y))
+        draw_score("Juked ", dodged, (0,0))
+        if selected_car == carImg3:
+            draw_score("Rekt ", destroyed, (0, 30))
 
         if x > display_width - car_width or x < 0:  #car hitting border
             crash()
 
+        if thing_y < rocket_y < thing_y + thing_h and thing_x < rocket_x < thing_x + thing_w: #rocket hitting thing
+            pygame.mixer.Sound.play(splat_sound)
+            thing_x = -600 - thing_y
+            thing_y = random.randrange(0, display_width)
+            destroyed += 1
+            dodged += 1
+
+
         if thing_y > display_heigth:    #object out of screen
+            pygame.mixer.Sound.play(ding_sound)
             thing_y = 0 - thing_h
             thing_x = random.randrange(0, display_width)
             dodged += 1
@@ -317,10 +347,12 @@ def game_loop():
 
         if y < thing_y + thing_h and y + car_height > thing_y: #collision
             if thing_x < x < thing_x + thing_w or thing_x < x+car_width < thing_x + thing_w:
-                crash()
+                pygame.mixer.Sound.play(explosion_sound)
+                # crash()
 
         if shoot_cd > 0:
             shoot_cd -= 1
+
         pygame.display.update()
         clock.tick(60)
 
