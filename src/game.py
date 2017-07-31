@@ -6,6 +6,7 @@ pygame.init()
 version = 1.0
 display_width = 800
 display_heigth = 600
+resources_path = '../resources/'
 
 black = (0,0,0)
 white = (255,255,255)
@@ -30,24 +31,24 @@ difficulty_adjusted = False
 gameDisplay = pygame.display.set_mode((display_width,display_heigth))
 pygame.display.set_caption('NEW GTA TOTALLY NOT OVERHYPED KAPPA GAME nomansbuy 2.0')
 clock = pygame.time.Clock()
-carImg1 = pygame.image.load('../resources/car.png')
-carImg2 = pygame.image.load('BestGameCarLmao.png')
-carImg3 = pygame.image.load('dildowcar.png')
-carImg4 = pygame.image.load('lambo.png')
-icon = pygame.image.load('bin.png')
-img_bg2 = pygame.image.load('sanicpepe.png')
-rocket = pygame.image.load('rocket.png')
+carImg1 = pygame.image.load(resources_path + 'car.png')
+carImg2 = pygame.image.load(resources_path + 'BestGameCarLmao.png')
+carImg3 = pygame.image.load(resources_path + 'dildowcar.png')
+carImg4 = pygame.image.load(resources_path + 'lambo.png')
+icon = pygame.image.load(resources_path + 'bin.png')
+img_bg2 = pygame.image.load(resources_path + 'sanicpepe.png')
+rocket = pygame.image.load(resources_path + 'rocket.png')
 
 selected_car = carImg1
 
-crash_sound = pygame.mixer.Sound('Lol U Died.wav')
-pause_sound = pygame.mixer.Sound('GetUrAssBackThere.wav')
-intro_sound = pygame.mixer.Sound('DialUp Internet.wav')
-# intro2_sound = pygame.mixer.Sound('Oh Hello There.wav')
-ding_sound = pygame.mixer.Sound('Ding.wav')
-explosion_sound = pygame.mixer.Sound('Explosion.wav')
-splat_sound = pygame.mixer.Sound('Splat.wav')
-play_music = pygame.mixer.music.load('despacito.wav')
+crash_sound = pygame.mixer.Sound(resources_path + 'Lol U Died.wav')
+pause_sound = pygame.mixer.Sound(resources_path + 'GetUrAssBackThere.wav')
+intro_sound = pygame.mixer.Sound(resources_path + 'DialUp Internet.wav')
+# intro2_sound = pygame.mixer.Sound(resources_path + 'Oh Hello There.wav')
+ding_sound = pygame.mixer.Sound(resources_path + 'Ding.wav')
+explosion_sound = pygame.mixer.Sound(resources_path + 'Explosion.wav')
+splat_sound = pygame.mixer.Sound(resources_path + 'Splat.wav')
+play_music = pygame.mixer.music.load(resources_path + 'despacito.wav')
 
 pygame.display.set_icon(icon)
 
@@ -101,19 +102,19 @@ def difficulty_settings(score):
         if score == 10:
             car_speed += 3
             pygame.mixer.music.stop()
-            play_music = pygame.mixer.music.load('despacito2.wav')
+            play_music = pygame.mixer.music.load(resources_path + 'despacito2.wav')
             pygame.mixer.music.play(-1)
             difficulty_adjusted = True
         elif score == 20:
             car_speed += 3
             pygame.mixer.music.stop()
-            play_music = pygame.mixer.music.load('despacito3.wav')
+            play_music = pygame.mixer.music.load(resources_path + 'despacito3.wav')
             pygame.mixer.music.play(-1)
             difficulty_adjusted = True
         elif score == 30:
             car_speed += 3
             pygame.mixer.music.stop()
-            play_music = pygame.mixer.music.load('BITCHES AINT SHIT.wav')
+            play_music = pygame.mixer.music.load(resources_path + 'BITCHES AINT SHIT.wav')
             pygame.mixer.music.play(-1)
             difficulty_adjusted = True
 
@@ -125,7 +126,7 @@ def crash():
     global play_music
     pygame.mixer.music.stop()
     pygame.mixer.Sound.play(crash_sound)
-    play_music = pygame.mixer.music.load('despacito.wav')
+    play_music = pygame.mixer.music.load(resources_path + 'despacito.wav')
 
     while True:
         for event in pygame.event.get():
