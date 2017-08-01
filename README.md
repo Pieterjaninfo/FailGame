@@ -2,7 +2,7 @@
 title says all
 
 It truly is a magnificent game, with its goal being to get as much points as possible.  
-To play the game download the project as ZIP and then execute RaceGameVeryWows/game.exe - Shortcut.lnk  
+To play the game download the project as ZIP or download the ZIP file of just the game here: https://files.fm/u/87ewwvxx and then execute RaceGameVeryWows/game.exe - Shortcut.lnk  
 **_Warning: Lower volume!_**
 
 
