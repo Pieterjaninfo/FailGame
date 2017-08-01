@@ -1,9 +1,10 @@
 # FailGame
 title says all
 
-It truly is a magnificent game.  
+It truly is a magnificent game, with its goal to get as much points as possible.  
 To play the game download the project as ZIP and then execute RaceGameVeryWows/game.exe - Shortcut.lnk  
 **_Warning: Lower volume!_**
+
 
 #### There are four cars to choose from in the main menu.
 - Car 1: Normal mode
