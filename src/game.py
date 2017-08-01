@@ -1,12 +1,14 @@
 import pygame
 import random
+import sys
 pygame.init()
+
 
 # Initialize variables
 version = 1.0
 display_width = 800
 display_heigth = 600
-resources_path = '../resources/'
+resources_path = 'resources/'
 
 black = (0,0,0)
 white = (255,255,255)
@@ -35,7 +37,7 @@ carImg1 = pygame.image.load(resources_path + 'car.png')
 carImg2 = pygame.image.load(resources_path + 'BestGameCarLmao.png')
 carImg3 = pygame.image.load(resources_path + 'dildowcar.png')
 carImg4 = pygame.image.load(resources_path + 'lambo.png')
-icon = pygame.image.load(resources_path + 'bin.png')
+icon = pygame.image.load(resources_path + 'bin.ico')
 img_bg2 = pygame.image.load(resources_path + 'sanicpepe.png')
 rocket = pygame.image.load(resources_path + 'rocket.png')
 
@@ -148,7 +150,8 @@ def crash():
 
 def quitgame():
     pygame.quit()
-    quit()
+    # quit()
+    sys.exit()
 
 
 def button(msg, x, y, w, h, c, c_hover, action=None):

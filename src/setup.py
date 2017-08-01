@@ -1,9 +1,16 @@
 import sys
-from cx_Freeze import *
+from cx_Freeze import setup, Executable
+
+target = Executable(
+	script = 'game.py', 
+	base = 'Win32GUI',
+	icon = 'resources/bin.ico'
+)
 
 setup(
-    name = 'game',
-	version = '3.1',
+    name = 'RaceGame',
+	version = '1.0',
 	description = 'Best car dodge topdown view game ever!',
-    executables=[Executable('game.py', base = 'Win32GUI')]
+	author = 'Luke Dudeson',
+    executables=[target]
 )
