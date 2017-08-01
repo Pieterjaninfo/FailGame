@@ -44,9 +44,10 @@ selected_car = carImg1
 crash_sound = pygame.mixer.Sound(resources_path + 'Lol U Died.wav')
 pause_sound = pygame.mixer.Sound(resources_path + 'GetUrAssBackThere.wav')
 intro_sound = pygame.mixer.Sound(resources_path + 'DialUp Internet.wav')
-# intro2_sound = pygame.mixer.Sound(resources_path + 'Oh Hello There.wav')
+intro_sound2 = pygame.mixer.Sound(resources_path + 'Oh Hello There.wav')
 ding_sound = pygame.mixer.Sound(resources_path + 'Ding.wav')
 explosion_sound = pygame.mixer.Sound(resources_path + 'Explosion.wav')
+explosion_sound2 = pygame.mixer.Sound(resources_path + 'Object Crash Sound.wav')
 splat_sound = pygame.mixer.Sound(resources_path + 'Splat.wav')
 play_music = pygame.mixer.music.load(resources_path + 'despacito.wav')
 
@@ -215,7 +216,7 @@ def paused():
 
 def game_intro():
     pygame.mixer.music.stop()
-    pygame.mixer.Sound.play(intro_sound)
+    pygame.mixer.Sound.play(random.choice([intro_sound, intro_sound2]))
     intro = True
     while intro:
         for event in pygame.event.get():
@@ -348,8 +349,8 @@ def game_loop():
 
         if y < thing_y + thing_h and y + car_height > thing_y: #collision
             if thing_x < x < thing_x + thing_w or thing_x < x+car_width < thing_x + thing_w:
-                pygame.mixer.Sound.play(explosion_sound)
-                # crash()
+                pygame.mixer.Sound.play(random.choice([explosion_sound, explosion_sound2]))
+                crash()
 
         if shoot_cd > 0:
             shoot_cd -= 1
